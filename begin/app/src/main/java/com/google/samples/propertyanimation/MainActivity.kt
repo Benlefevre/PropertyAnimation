@@ -79,92 +79,115 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun rotater() {
-        val animator = ObjectAnimator.ofFloat(starCenter, View.ROTATION, -360f,0f)
-        animator.duration = 1000
-        animator.disableViewDuringAnimation(rotaterButton)
-        animator.start()
+        val animator = ObjectAnimator.ofFloat(starCenter, View.ROTATION, -360f, 0f)
+        animator.apply {
+            duration = 1000
+            disableViewDuringAnimation(rotaterButton)
+            start()
+        }
     }
 
     private fun translater() {
-        val animator = ObjectAnimator.ofFloat(starCenter,View.TRANSLATION_X, 200f)
-        animator.repeatCount = 1
-        animator.repeatMode = ObjectAnimator.REVERSE
-        animator.disableViewDuringAnimation(translaterButton)
-        animator.start()
+        val animator = ObjectAnimator.ofFloat(starCenter, View.TRANSLATION_X, 200f)
+        animator.apply {
+            repeatCount = 1
+            repeatMode = ObjectAnimator.REVERSE
+            disableViewDuringAnimation(translaterButton)
+            start()
+        }
     }
 
     private fun scaler() {
-        val scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X,4f)
-        val scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y,4f)
-        val animator =  ObjectAnimator.ofPropertyValuesHolder(starCenter,scaleX,scaleY)
-        animator.duration = 1000
-        animator.repeatCount = 1
-        animator.repeatMode = ObjectAnimator.REVERSE
-        animator.disableViewDuringAnimation(scalerButton)
-        animator.start()
+        val scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 4f)
+        val scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 4f)
+        val animator = ObjectAnimator.ofPropertyValuesHolder(starCenter, scaleX, scaleY)
+        animator.apply {
+            duration = 1000
+            repeatCount = 1
+            repeatMode = ObjectAnimator.REVERSE
+            disableViewDuringAnimation(scalerButton)
+            start()
+        }
     }
 
     private fun fader() {
-        val animator = ObjectAnimator.ofFloat(starCenter,View.ALPHA, 0f)
-        animator.duration = 1000
-        animator.repeatCount = 1
-        animator.repeatMode = ObjectAnimator.REVERSE
-        animator.disableViewDuringAnimation(faderButton)
-        animator.start()
+        val animator = ObjectAnimator.ofFloat(starCenter, View.ALPHA, 0f)
+        animator.apply {
+            duration = 1000
+            repeatCount = 1
+            repeatMode = ObjectAnimator.REVERSE
+            disableViewDuringAnimation(faderButton)
+            start()
+        }
     }
 
     private fun colorizer() {
-        val animator = ObjectAnimator.ofArgb(starCenter.parent,"backgroundColor", Color.BLACK, Color.BLUE)
-        animator.duration = 1000
-        animator.repeatCount = 1
-        animator.repeatMode = ObjectAnimator.REVERSE
-        animator.disableViewDuringAnimation(colorizerButton)
-        animator.start()
+        val animator =
+            ObjectAnimator.ofArgb(starCenter.parent, "backgroundColor", Color.BLACK, Color.BLUE)
+        animator.apply {
+            duration = 1000
+            repeatCount = 1
+            repeatMode = ObjectAnimator.REVERSE
+            disableViewDuringAnimation(colorizerButton)
+            start()
+        }
     }
 
     private fun shower() {
         val container = starCenter.parent as ViewGroup
-        val width = container.width
-        val height = container.height
+        val containerW = container.width
+        val containerH = container.height
         var starW = starCenter.width.toFloat()
         var starH = starCenter.height.toFloat()
 
         val newStar = AppCompatImageView(this)
-        newStar.setImageResource(R.drawable.ic_star)
-        newStar.layoutParams = FrameLayout.LayoutParams(
+        newStar.apply {
+            setImageResource(R.drawable.ic_star)
+            layoutParams = FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.WRAP_CONTENT,
                 FrameLayout.LayoutParams.WRAP_CONTENT
-        )
-        newStar.scaleX = Math.random().toFloat() * 1.5f + 0.1f
-        newStar.scaleY = newStar.scaleX
+            )
+            scaleX = Math.random().toFloat() * 1.5f + 0.1f
+            scaleY = newStar.scaleX
+            translationX = Math.random().toFloat() * containerW - starW / 2
+        }
         starW *= newStar.scaleX
         starH *= newStar.scaleY
-        newStar.translationX = Math.random().toFloat() * width - starW/2
-
-        val mover = ObjectAnimator.ofFloat(newStar,View.TRANSLATION_Y,-starH, height + starH)
-        mover.interpolator = AccelerateInterpolator(1f)
-
-        val rotator = ObjectAnimator.ofFloat(newStar,View.ROTATION,(Math.random() * 1080).toFloat())
-        rotator.interpolator = LinearInterpolator()
-
-        val translator = ObjectAnimator.ofFloat(newStar, View.TRANSLATION_X,(Math.random().toFloat() * width - starW/2))
-        translator.interpolator = AccelerateInterpolator(0.2f)
 
         container.addView(newStar)
 
-        val set = AnimatorSet()
-        set.playTogether(mover,rotator,translator)
-        set.duration = (Math.random() * 1500 +500).toLong()
-        set.addListener(object:AnimatorListenerAdapter(){
-            override fun onAnimationEnd(animation: Animator?) {
-                container.removeView(newStar)
+        val mover =
+            ObjectAnimator.ofFloat(newStar, View.TRANSLATION_Y, -starH, containerH + starH).apply {
+                interpolator = AccelerateInterpolator(1f)
             }
-        })
-        set.start()
+
+        val rotator =
+            ObjectAnimator.ofFloat(newStar, View.ROTATION, (Math.random() * 1080).toFloat()).apply {
+                interpolator = LinearInterpolator()
+            }
+
+        val translator =
+            ObjectAnimator.ofFloat(
+                newStar, View.TRANSLATION_X, (Math.random().toFloat() * containerW - starW / 2)
+            ).apply {
+                interpolator = AccelerateInterpolator(0.2f)
+            }
+
+        val set = AnimatorSet()
+        set.apply {
+            playTogether(mover, rotator, translator)
+            duration = (Math.random() * 1500 + 500).toLong()
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator?) {
+                    container.removeView(newStar)
+                }
+            })
+            start()
+        }
     }
 
-    private fun ObjectAnimator.disableViewDuringAnimation(view : View){
-        addListener(object : AnimatorListenerAdapter(){
+    private fun ObjectAnimator.disableViewDuringAnimation(view: View) {
+        addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationStart(animation: Animator?) {
                 view.isEnabled = false
             }
